@@ -16,7 +16,7 @@ logging.info("\n")
 
 # Load face cascade classifier
 face_cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+    cv2.data.haarcascades + "weights/haarcascade_frontalface_default.xml"
 )
 
 # Directory containing images
