@@ -1,5 +1,5 @@
-pyvts
-opencv-python
-deepface
-tf_keras
-deepface
+deepface==0.0.90
+opencv_contrib_python==4.9.0.80
+opencv_python==4.9.0.80
+opencv_python_headless==4.9.0.80
+pyvts==0.3.2

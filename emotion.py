@@ -1,5 +1,14 @@
 import cv2
 from deepface import DeepFace
+import logging
+
+# Configure logging
+logging.basicConfig(
+    filename="emotions.log",
+    filemode="w",
+    format="%(asctime)s - %(message)s",
+    level=logging.INFO,
+)
 
 # Load face cascade classifier
 face_cascade = cv2.CascadeClassifier(
@@ -16,9 +25,6 @@ while True:
     # Convert frame to grayscale
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Convert grayscale frame to RGB format
-    rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
-
     # Detect faces in the frame
     faces = face_cascade.detectMultiScale(
         gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
@@ -26,20 +32,30 @@ while True:
 
     for x, y, w, h in faces:
         # Extract the face ROI (Region of Interest)
-        face_roi = rgb_frame[y : y + h, x : x + w]
+        face_roi = frame[y : y + h, x : x + w]
 
         # Perform emotion analysis on the face ROI
         result = DeepFace.analyze(
             face_roi, actions=["emotion"], enforce_detection=False
         )
 
-        # Determine the dominant emotion
-        emotion = result[0]["dominant_emotion"]
+        # Log the emotion detected along with additional data points
+        dominant_emotion = result["dominant_emotion"]
+        emotion_probabilities = result["emotion"]
+        logging.info(
+            f"Face detected at position X: {x}, Y: {y}, Width: {w}, Height: {h}, Dominant Emotion: {dominant_emotion}, Emotion Probabilities: {emotion_probabilities}"
+        )
 
-        # Draw rectangle around face and label with predicted emotion
+        # Draw rectangle around face and label with predicted dominant emotion
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.putText(
-            frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2
+            frame,
+            dominant_emotion,
+            (x, y - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.9,
+            (0, 0, 255),
+            2,
         )
 
     # Display the resulting frame
